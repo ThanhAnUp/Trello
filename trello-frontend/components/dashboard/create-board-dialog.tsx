@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { useToast } from "../ui/use-toast"
+import { useToast } from "@/hooks/use-toast"
 import { api } from "@/lib/api"
 
 interface CreateBoardDialogProps {
@@ -34,7 +34,6 @@ export function CreateBoardDialog({ open, onOpenChange }: CreateBoardDialogProps
         setIsLoading(true)
 
         try {
-
             await api.request({
                 method: 'post',
                 url: '/boards',
