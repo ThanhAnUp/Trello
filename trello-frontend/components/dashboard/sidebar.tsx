@@ -8,14 +8,13 @@ import { CheckCircle, LayoutDashboard, Users, Plus } from "lucide-react"
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Team Members", href: "/dashboard/members", icon: Users },
 ]
 
 export function Sidebar() {
   const pathname = usePathname()
 
   return (
-    <div className="w-64 bg-white border-r border-gray-200 min-h-screen">
+    <div className="w-56 bg-white border-r border-gray-200 min-h-screen">
       <div className="p-6">
         <div className="flex items-center space-x-2">
           <CheckCircle className="h-8 w-8 text-blue-600" />
@@ -39,13 +38,6 @@ export function Sidebar() {
           )
         })}
       </nav>
-
-      <div className="p-4 mt-8">
-        <Button className="w-full" size="sm">
-          <Plus className="mr-2 h-4 w-4" />
-          New Board
-        </Button>
-      </div>
     </div>
   )
 }
