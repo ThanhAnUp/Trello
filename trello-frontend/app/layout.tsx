@@ -4,6 +4,7 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import { WebSocketProvider } from "@/components/providers/websocket-provider"
 import { AuthInitializer } from "@/components/auth/authInitializer"
+import { Toaster } from "@/components/ui/toaster"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -22,6 +23,7 @@ export default function RootLayout({
     <html lang="vi">
       <body className={inter.className}>
         <AuthInitializer/>
+        <Toaster />
         <WebSocketProvider>
           {children}
         </WebSocketProvider>

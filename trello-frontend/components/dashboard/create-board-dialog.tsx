@@ -30,36 +30,43 @@ export function CreateBoardDialog({ open, onOpenChange }: CreateBoardDialogProps
     const { toast } = useToast()
 
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
-        setIsLoading(true)
+        // e.preventDefault()
+        // setIsLoading(true)
 
-        try {
-            await api.request({
-                method: 'post',
-                url: '/boards',
-                data: {
-                    name,
-                    description
-                }
-            })
+        // try {
+        //     await api.request({
+        //         method: 'post',
+        //         url: '/boards',
+        //         data: {
+        //             name,
+        //             description
+        //         }
+        //     })
 
-            toast({
+        //     toast({
+        //         title: "Đã tạo bảng!",
+        //         description: `${name} Đã được tạo thành công.`,
+        //         variant: 'success'
+        //     })
+
+        //     setName("")
+        //     setDescription("")
+        //     onOpenChange(false)
+        // } catch (error) {
+        //     toast({
+        //         title: "Lỗi",
+        //         description: "Lỗi tạo bảng. Vui lòng thử lại.",
+        //         variant: "destructive",
+        //     })
+        // } finally {
+        //     setIsLoading(false)
+        // }
+
+        toast({
                 title: "Đã tạo bảng!",
                 description: `${name} Đã được tạo thành công.`,
+                variant: 'success'
             })
-
-            setName("")
-            setDescription("")
-            onOpenChange(false)
-        } catch (error) {
-            toast({
-                title: "Lỗi",
-                description: "Lỗi tạo bảng. Vui lòng thử lại.",
-                variant: "destructive",
-            })
-        } finally {
-            setIsLoading(false)
-        }
     }
 
     return (
