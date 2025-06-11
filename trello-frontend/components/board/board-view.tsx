@@ -12,6 +12,7 @@ import { TaskCard } from "./task-card"
 import { CreateTaskDialog } from "./create-task-dialog"
 import { api } from "@/lib/api"
 import { useToast } from "@/hooks/use-toast"
+import { TaskDetailDialog } from "./task-detail-dialog"
 
 interface Task {
     id: string
@@ -62,13 +63,13 @@ export function BoardView({ boardId }: BoardViewProps) {
         fetchInitialTasks();
 
         const handleTasksReordered = ({ orderedTaskIds }: { orderedTaskIds: string[] }) => {
-                setTasks(currentTasks => {
-                    const otherTasks = currentTasks.filter(task => !orderedTaskIds.includes(task.id));
-                    const taskMap = new Map(currentTasks.map(task => [task.id, task]));
-                    const reorderedTasksInColumn = orderedTaskIds.map(id => taskMap.get(id)).filter(Boolean) as Task[];
-                    return [...otherTasks, ...reorderedTasksInColumn];
-                });
-            };
+            setTasks(currentTasks => {
+                const otherTasks = currentTasks.filter(task => !orderedTaskIds.includes(task.id));
+                const taskMap = new Map(currentTasks.map(task => [task.id, task]));
+                const reorderedTasksInColumn = orderedTaskIds.map(id => taskMap.get(id)).filter(Boolean) as Task[];
+                return [...otherTasks, ...reorderedTasksInColumn];
+            });
+        };
 
         if (isConnected && socket) {
             emitEvent('join_board', boardId);
@@ -82,15 +83,21 @@ export function BoardView({ boardId }: BoardViewProps) {
                 );
             };
 
+            const handleTaskDeleted = ({ id: deletedTaskId }: { id: string }) => {
+                setTasks((prevTasks) => prevTasks.filter(task => task.id !== deletedTaskId));
+            };
+
             socket.on('task_created', handleTaskCreated);
             socket.on('task_updated', handleTaskUpdated);
             socket.on('tasks_reordered', handleTasksReordered);
+            socket.on('task_deleted', handleTaskDeleted);
 
             return () => {
                 emitEvent('leave_board', boardId);
                 socket.off('task_created', handleTaskCreated);
                 socket.off('task_updated', handleTaskUpdated);
                 socket.off('tasks_reordered', handleTasksReordered);
+                socket.off('task_deleted', handleTaskDeleted);
             };
         }
     }, [boardId, isConnected, socket, emitEvent]);
@@ -183,7 +190,7 @@ export function BoardView({ boardId }: BoardViewProps) {
 
             <div className="flex w-full h-full overflow-x-auto p-4">
                 <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-                        <div className="flex gap-4 h-full w-full pb-4">
+                    <div className="flex gap-4 h-full w-full pb-4">
                         <SortableContext items={initialColumns.map((col) => col.id)} strategy={horizontalListSortingStrategy}>
                             {initialColumns.map((column) => (
                                 <Column
@@ -204,13 +211,17 @@ export function BoardView({ boardId }: BoardViewProps) {
                     <DragOverlay>{activeTask ? <TaskCard task={activeTask} isDragging /> : null}</DragOverlay>
                 </DndContext>
             </div>
-
-
             <CreateTaskDialog
                 boardId={boardId}
                 open={showCreateDialog}
                 onOpenChange={setShowCreateDialog}
             // onTaskCreated={(task) => setTasks((prev) => [...prev, task])}
+            />
+            <TaskDetailDialog
+                task={selectedTask}
+                boardId={boardId}
+                open={showTaskDetail}
+                onOpenChange={setShowTaskDetail}
             />
         </div>
     )
