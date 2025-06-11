@@ -37,11 +37,9 @@ export function SignInForm() {
       console.log(data, 'data.success')
       if (data.success) {
         router.push('/dashboard')
-      } else {
-       
       }
     } catch (error) {
-     
+
     } finally {
       setIsLoading(false)
     }

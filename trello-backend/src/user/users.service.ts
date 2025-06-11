@@ -45,7 +45,7 @@ export class UsersService {
 
         const docRef = await this.firestore.collection(this.usersCollection).add({
             ...userData,
-            createdAt: admin.firestore.FieldValue.serverTimestamp()
+            createdAt: new Date()
         });
         
         const newUserDoc = await docRef.get();

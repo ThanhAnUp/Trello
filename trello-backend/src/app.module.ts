@@ -4,6 +4,7 @@ import { FirebaseModule } from './firebase/firebase.module';
 import { ConfigModule } from '@nestjs/config';
 import { BoardGateway } from './websocket/gateway';
 import { AuthModule } from './auth/auth.module';
+import { BoardsModule } from './boards/boards.module';
 
 @Module({
   imports: [
@@ -11,7 +12,8 @@ import { AuthModule } from './auth/auth.module';
       isGlobal: true,
     }),
     AuthModule,
-    FirebaseModule
+    FirebaseModule,
+    BoardsModule
   ],
   controllers: [AppController],
   providers: [BoardGateway],
