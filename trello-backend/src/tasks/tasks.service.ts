@@ -73,4 +73,26 @@ export class TasksService {
     await batch.commit();
     this.boardGateway.broadcastTaskUpdate(boardId, 'tasks_reordered', { orderedTaskIds });
   }
+
+  private getAttachmentsCollection(boardId: string, taskId: string) {
+    return this.getTasksCollection(boardId).doc(taskId).collection('attachments');
+  }
+
+  async addAttachment(boardId: string, taskId: string, attachmentData: any) {
+    const docRef = await this.getAttachmentsCollection(boardId, taskId).add({
+      ...attachmentData,
+      createdAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+    return { attachmentId: docRef.id, ...attachmentData };
+  }
+
+  async getAttachments(boardId: string, taskId: string) {
+    const snapshot = await this.getAttachmentsCollection(boardId, taskId).get();
+    if (snapshot.empty) return [];
+    return snapshot.docs.map(doc => ({ attachmentId: doc.id, ...doc.data() }));
+  }
+
+  async removeAttachment(boardId: string, taskId: string, attachmentId: string) {
+    await this.getAttachmentsCollection(boardId, taskId).doc(attachmentId).delete();
+  }
 }

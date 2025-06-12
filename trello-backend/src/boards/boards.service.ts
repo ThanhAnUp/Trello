@@ -5,8 +5,8 @@ import * as admin from 'firebase-admin';
 
 @Injectable()
 export class BoardsService {
-    private readonly boardsCollection =  'boards';
-    constructor(private readonly firebaseService: FirebaseService){}
+    private readonly boardsCollection = 'boards';
+    constructor(private readonly firebaseService: FirebaseService) { }
 
     async create(dto: CreateBoardDto, ownerId: string): Promise<any> {
         const newBoard = {
@@ -24,19 +24,19 @@ export class BoardsService {
 
     async findAllForUser(userId: string) {
         const snapshot = await this.firebaseService.getFirestore().collection(this.boardsCollection).where('memberIds', 'array-contains', userId).get();
-        if(snapshot.empty){
+        if (snapshot.empty) {
             return [];
         }
-        return snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
+        return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
     }
 
     async findOne(id: string, userId: string): Promise<any> {
         const doc = await this.firebaseService.getFirestore().collection(this.boardsCollection).doc(id).get();
-        if(!doc.exists){
+        if (!doc.exists) {
             throw new NotFoundException('Board không tồn tại');
         }
         const boardData = doc.data();
-        if(!boardData || !boardData.memberIds.includes(userId)){
+        if (!boardData || !boardData.memberIds.includes(userId)) {
             throw new NotFoundException('Bạn không phải thành viên của board này.')
         }
         return {
@@ -49,6 +49,13 @@ export class BoardsService {
         const boardRef = this.firebaseService.getFirestore().collection(this.boardsCollection).doc(boardId);
         await boardRef.update({
             memberIds: admin.firestore.FieldValue.arrayUnion(userId)
+        });
+    }
+
+    async linkRepository(boardId: string, owner: string, repo: string): Promise<void> {
+        const boardRef = this.firebaseService.getFirestore().collection('boards').doc(boardId);
+        await boardRef.update({
+            linkedRepo: { owner, repo }
         });
     }
 }

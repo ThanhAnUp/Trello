@@ -2,6 +2,7 @@ import { Body, Controller, Get, Param, Post, Req, UseGuards } from "@nestjs/comm
 import { JwtAuthGuard } from "src/auth/jwt/jwt.auth.guard";
 import { BoardsService } from "./boards.service";
 import { CreateBoardDto } from "./dto/create-board.dto";
+import { LinkRepoDto } from "src/github/dto/link.repo.dto";
 
 @UseGuards(JwtAuthGuard)
 @Controller('boards')
@@ -30,5 +31,10 @@ export class BoardsController {
     joinBoard(@Param('id') id: string, @Req() req) {
         const userId = req.user.id;
         return this.boardsService.addMember(id, userId);
+    }
+
+    @Post(':id/link-repo')
+    linkRepository(@Param('id') id: string, @Body() linkRepoDto: LinkRepoDto) {
+        return this.boardsService.linkRepository(id, linkRepoDto.owner, linkRepoDto.repo);
     }
 }

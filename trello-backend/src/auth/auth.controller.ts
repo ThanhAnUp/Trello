@@ -42,10 +42,10 @@ export class AuthController {
         @Res() res: Response,
     ) {
         if (!code) {
-            return { success: false, user: null };
+            return res.redirect(`${process.env.FRONTEND_URL}/auth/signin?error=true`);
         }
         try {
-            const { access_token, user } = await this.authService.loginWithGithub(code);
+            const { access_token } = await this.authService.loginWithGithub(code);
             res.cookie('AUTH_TOKEN', access_token, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
@@ -53,10 +53,10 @@ export class AuthController {
                 sameSite: 'lax',
                 path: '/',
             });
-            return { success: true, user };
+            return res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
 
         } catch (error) {
-            return { success: false, user: null };
+            return res.redirect(`${process.env.FRONTEND_URL}/auth/signin?error=true`);
         }
     }
 

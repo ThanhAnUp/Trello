@@ -1,9 +1,13 @@
+"use client"
+
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Users, Zap, Globe, Trello } from "lucide-react"
+import { useUserStore } from "@/store/user-store"
 
 export function LandingPage() {
+  const {user} = useUserStore()
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex flex-col">
       <header className="border-b bg-white/80 backdrop-blur-sm">
@@ -16,7 +20,7 @@ export function LandingPage() {
             <Link href="/auth/signin">
               <Button variant="ghost">Đăng nhập</Button>
             </Link>
-            <Link href="/auth/signup">
+            <Link href={user ? "/dashboard" : "/auth/signup"}>
               <Button>Bắt đầu ngay</Button>
             </Link>
           </div>

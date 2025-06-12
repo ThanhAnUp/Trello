@@ -14,6 +14,7 @@ import { useUserStore } from "@/store/user-store"
 export type BoardItem = {
   id: string,
   name: string,
+  linkedRepo?: { owner: string; repo: string };
   description: string,
   ownerId: string,
   memberIds: string[],

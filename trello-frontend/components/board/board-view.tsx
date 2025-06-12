@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { DndContext, type DragEndEvent, DragOverlay, type DragStartEvent } from "@dnd-kit/core"
 import { SortableContext, arrayMove, horizontalListSortingStrategy } from "@dnd-kit/sortable"
 import { Button } from "@/components/ui/button"
-import { Plus, ArrowLeft } from "lucide-react"
+import { Plus, ArrowLeft, Settings } from "lucide-react"
 import Link from "next/link"
 import { useWebSocket } from "../providers/websocket-provider"
 import { Column } from "./column"
@@ -13,6 +13,9 @@ import { CreateTaskDialog } from "./create-task-dialog"
 import { api } from "@/lib/api"
 import { useToast } from "@/hooks/use-toast"
 import { TaskDetailDialog } from "./task-detail-dialog"
+import { BoardItem } from "../dashboard/boards-grid"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog"
+import { LinkRepoForm } from "./link-repo-form"
 
 interface Task {
     id: string
@@ -40,27 +43,36 @@ const initialColumns = [
 export function BoardView({ boardId }: BoardViewProps) {
     const [tasks, setTasks] = useState<Task[]>([])
     const [loading, setLoading] = useState(true);
+    const [board, setBoard] = useState<BoardItem | null>(null);
     const [activeTask, setActiveTask] = useState<Task | null>(null)
     const [showCreateDialog, setShowCreateDialog] = useState(false)
     const { socket, isConnected, emitEvent } = useWebSocket()
     const [selectedTask, setSelectedTask] = useState<Task | null>(null)
     const [showTaskDetail, setShowTaskDetail] = useState(false)
+    const [showSettingsDialog, setShowSettingsDialog] = useState(false);
     const { toast } = useToast()
+
+    const fetchData = async () => {
+        if (!boardId) return;
+        try {
+            setLoading(true);
+            const [boardRes, tasksRes] = await Promise.all([
+                api.get(`/boards/${boardId}`),
+                api.get(`/boards/${boardId}/tasks`)
+            ]);
+            setBoard(boardRes.data);
+            setTasks(tasksRes.data);
+        } catch (error) {
+            console.error("Lỗi khi tải dữ liệu board:", error);
+            toast({ variant: "destructive", title: "Lỗi", description: "Không thể tải dữ liệu của board." });
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
         if (!boardId) return;
-        const fetchInitialTasks = async () => {
-            try {
-                setLoading(true);
-                const response = await api.get(`/boards/${boardId}/tasks`);
-                setTasks(response.data);
-            } catch (error) {
-                console.error("Lỗi khi tải tasks:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchInitialTasks();
+        fetchData();
 
         const handleTasksReordered = ({ orderedTaskIds }: { orderedTaskIds: string[] }) => {
             setTasks(currentTasks => {
@@ -182,10 +194,32 @@ export function BoardView({ boardId }: BoardViewProps) {
                         </Button>
                     </Link>
                 </div>
-                <Button onClick={() => setShowCreateDialog(true)}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Thêm Task
-                </Button>
+                <div className="flex items-center space-x-2">
+                    <Button onClick={() => setShowCreateDialog(true)}>
+                        <Plus className="h-4 w-4 mr-2" />
+                        Thêm Task
+                    </Button>
+                    <Dialog open={showSettingsDialog} onOpenChange={setShowSettingsDialog}>
+                        <DialogTrigger asChild>
+                            <Button variant="outline"><Settings className="h-4 w-4" /></Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>Cài đặt Board</DialogTitle>
+                                <DialogDescription>Quản lý và tích hợp cho board "{board?.name}".</DialogDescription>
+                            </DialogHeader>
+                            {board && <LinkRepoForm
+                                boardId={boardId}
+                                currentRepo={board.linkedRepo}
+                                onSuccess={() => {
+                                    fetchData();
+                                    setShowSettingsDialog(false);
+                                }}
+                            />}
+                        </DialogContent>
+                    </Dialog>
+                </div>
+
             </div>
 
             <div className="flex w-full h-full overflow-x-auto p-4">

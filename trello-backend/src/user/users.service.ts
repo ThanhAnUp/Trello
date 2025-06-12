@@ -38,6 +38,14 @@ export class UsersService {
         return { id: doc.id, ...doc.data() };
     }
 
+    async findById(id: string): Promise<any | null> {
+        const doc = await this.firestore.collection(this.usersCollection).doc(id).get();
+        if (!doc.exists) {
+            return null;
+        }
+        return { id: doc.id, ...doc.data() };
+    }
+
     async create(userData: any): Promise<any> {
         if (userData.password) {
             userData.password = await bcrypt.hash(userData.password, 10);

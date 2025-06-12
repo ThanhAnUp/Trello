@@ -137,25 +137,19 @@ export class AuthService {
         const githubIdString = githubUser.id.toString();
         let user = await this.usersService.findByGithubId(githubIdString);
 
-        if (!user) {
-            if (githubUser.email) {
-                user = await this.usersService.findByEmail(githubUser.email);
-            }
-            if (user) {
-                await this.usersService.update(user.id, {
-                    githubId: githubIdString,
-                    avatarUrl: user.avatarUrl || githubUser.avatar_url,
-                });
-                user.githubId = githubIdString;
-            } else {
-                const newUserPayload = {
-                    githubId: githubIdString,
-                    email: githubUser.email,
-                    name: githubUser.name || githubUser.login,
-                    avatarUrl: githubUser.avatar_url,
-                };
-                user = await this.usersService.create(newUserPayload);
-            }
+        const userUpdateData = {
+            githubId: githubIdString,
+            email: githubUser.email,
+            name: githubUser.name || githubUser.login,
+            avatarUrl: githubUser.avatar_url,
+            githubAccessToken: githubToken
+        };
+
+        if (user) {
+            await this.usersService.update(user.id, userUpdateData);
+            user = { ...user, ...userUpdateData };
+        } else {
+            user = await this.usersService.create(userUpdateData);
         }
 
         const { access_token } = await this.login(user);

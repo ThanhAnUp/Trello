@@ -6,6 +6,7 @@ import { BoardGateway } from './websocket/gateway';
 import { AuthModule } from './auth/auth.module';
 import { BoardsModule } from './boards/boards.module';
 import { TasksModule } from './tasks/tasks.module';
+import { GithubModule } from './github/github.module';
 
 @Module({
   imports: [
@@ -15,7 +16,8 @@ import { TasksModule } from './tasks/tasks.module';
     AuthModule,
     FirebaseModule,
     BoardsModule,
-    TasksModule
+    TasksModule,
+    GithubModule
   ],
   controllers: [AppController],
   providers: [BoardGateway],

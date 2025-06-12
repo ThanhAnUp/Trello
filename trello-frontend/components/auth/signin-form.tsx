@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Trello } from "lucide-react"
+import { Github, Trello } from "lucide-react"
 import { api } from "@/lib/api"
 
 export function SignInForm() {
@@ -55,6 +55,25 @@ export function SignInForm() {
         <CardDescription>Vui lòng đăng nhập để tiếp tục</CardDescription>
       </CardHeader>
       <CardContent>
+        <div className="space-y-4">
+          <a href={`${process.env.NEXT_PUBLIC_API_URL}/auth/github`} className="w-full">
+            <Button variant="outline" className="w-full">
+              <Github className="h-4 w-4 mr-2" />
+              Đăng nhập với GitHub
+            </Button>
+          </a>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                Hoặc tiếp tục với
+              </span>
+            </div>
+          </div>
+        </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
