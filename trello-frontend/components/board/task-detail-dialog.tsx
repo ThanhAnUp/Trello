@@ -94,8 +94,7 @@ export function TaskDetailDialog({ task, open, onOpenChange, boardId }: TaskDeta
 
                     if (boardData?.linkedRepo) {
                         setIsFetchingRepoData(true);
-                        const { owner, repo } = boardData.linkedRepo;
-                        const repoInfoRes = await api.get(`/repositories/${owner}/${repo}/github-info`);
+                        const repoInfoRes = await api.get(`/boards/${boardId}/github-info`);
                         setRepoData(repoInfoRes.data);
                     }
 
@@ -319,10 +318,10 @@ export function TaskDetailDialog({ task, open, onOpenChange, boardId }: TaskDeta
 
                     <div className="space-y-2">
                         {attachments.map(att => (
-                            <a 
-                                key={att.attachmentId} 
-                                href={getAttachmentUrl(att)} 
-                                target="_blank" 
+                            <a
+                                key={att.attachmentId}
+                                href={getAttachmentUrl(att)}
+                                target="_blank"
                                 rel="noopener noreferrer"
                                 className="flex items-center justify-between p-2 border rounded-md text-sm hover:bg-accent transition-colors"
                             >
@@ -331,16 +330,16 @@ export function TaskDetailDialog({ task, open, onOpenChange, boardId }: TaskDeta
                                     <span className="font-mono text-blue-600 ml-2 truncate">#{att.number || att.sha?.substring(0, 7)}</span>
                                     <ExternalLink className="h-3 w-3 ml-2 text-muted-foreground" />
                                 </div>
-                                <Button 
-                                    variant="ghost" 
-                                    size="icon" 
-                                    className="h-6 w-6 flex-shrink-0" 
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-6 w-6 flex-shrink-0"
                                     onClick={(e) => {
                                         e.preventDefault();
                                         handleRemoveAttachment(att.attachmentId);
                                     }}
                                 >
-                                    <Trash2 className="h-4 w-4 text-red-500"/>
+                                    <Trash2 className="h-4 w-4 text-red-500" />
                                 </Button>
                             </a>
                         ))}
