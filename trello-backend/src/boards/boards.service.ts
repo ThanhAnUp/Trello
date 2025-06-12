@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { FirebaseService } from "src/firebase/firebase.service";
 import { CreateBoardDto } from "./dto/create-board.dto";
 import * as admin from 'firebase-admin';
@@ -57,5 +57,37 @@ export class BoardsService {
         await boardRef.update({
             linkedRepo: { owner, repo }
         });
+    }
+
+    async delete(boardId: string, userId: string): Promise<void> {
+        const boardRef = this.firebaseService.getFirestore().collection(this.boardsCollection).doc(boardId);
+        const doc = await boardRef.get();
+
+        if (!doc.exists) {
+            throw new NotFoundException('Board không tồn tại');
+        }
+
+        const boardData = doc.data();
+        if (!boardData || boardData.ownerId !== userId) {
+            throw new UnauthorizedException('Bạn không có quyền xóa board này.');
+        }
+
+        await this.deleteSubCollection(boardRef, 'tasks');
+        await boardRef.delete();
+    }
+
+    private async deleteSubCollection(docRef: admin.firestore.DocumentReference, subCollectionName: string) {
+        const subCollection = docRef.collection(subCollectionName);
+        const snapshot = await subCollection.get();
+
+        if (snapshot.size === 0) {
+            return;
+        }
+
+        const batch = this.firebaseService.getFirestore().batch();
+        snapshot.docs.forEach(doc => {
+            batch.delete(doc.ref);
+        });
+        await batch.commit();
     }
 }

@@ -63,9 +63,35 @@ export function BoardsGrid() {
     });
   };
 
-  const handleDeleteClick = (event: React.MouseEvent<HTMLButtonElement>, id: string) => {
+  const handleDeleteClick = async (event: React.MouseEvent<HTMLButtonElement>, boardId: string, boardName: string) => {
     event.stopPropagation();
     event.preventDefault();
+
+    if (!window.confirm(`Bạn có chắc chắn muốn xóa board "${boardName}" không? Hành động này không thể hoàn tác.`)) {
+      return;
+    }
+
+    const originalBoards = [...boards];
+
+    setBoards(prevBoards => prevBoards.filter(board => board.id !== boardId));
+
+    try {
+      await api.delete(`/boards/${boardId}`);
+
+      toast({
+        title: "Đã xóa!",
+        description: `Board "${boardName}" đã được xóa thành công.`,
+      });
+    } catch (error: any) {
+      console.error('Lỗi khi xóa board:', error);
+      setBoards(originalBoards);
+
+      toast({
+        title: "Lỗi",
+        description: error.response?.data?.message || "Không thể xóa board. Vui lòng thử lại.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleJoinSuccess = (joinedBoardId: string) => {
@@ -98,7 +124,7 @@ export function BoardsGrid() {
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <Badge variant="secondary" className="bg-green-500 text-white">Open</Badge>
-                  {board.ownerId === user?.id && <Button variant='destructive' onClick={(event) => handleDeleteClick(event, board.id)}>
+                  {board.ownerId === user?.id && <Button variant='destructive' onClick={(event) => handleDeleteClick(event, board.id, board.name)}>
                     <Trash />
                     Xóa
                   </Button>}

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Req, UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "src/auth/jwt/jwt.auth.guard";
 import { BoardsService } from "./boards.service";
 import { CreateBoardDto } from "./dto/create-board.dto";
@@ -36,5 +36,11 @@ export class BoardsController {
     @Post(':id/link-repo')
     linkRepository(@Param('id') id: string, @Body() linkRepoDto: LinkRepoDto) {
         return this.boardsService.linkRepository(id, linkRepoDto.owner, linkRepoDto.repo);
+    }
+
+    @Delete(':id')
+    delete(@Param('id') id: string, @Req() req) {
+        const userId = req.user.id;
+        return this.boardsService.delete(id, userId);
     }
 }
