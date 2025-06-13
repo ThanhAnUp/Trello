@@ -43,4 +43,9 @@ export class BoardsController {
         const userId = req.user.id;
         return this.boardsService.delete(id, userId);
     }
+
+    @Get(':id/members')
+    getBoardMembers(@Param('id') id: string) {
+        return this.boardsService.getBoardMembers(id);
+    }
 }

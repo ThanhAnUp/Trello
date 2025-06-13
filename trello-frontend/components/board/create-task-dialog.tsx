@@ -18,6 +18,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
 import { api } from "@/lib/api"
+import { BoardMember } from "./board-view"
 
 interface Task {
   id: string
@@ -34,11 +35,10 @@ interface CreateTaskDialogProps {
   onOpenChange: (open: boolean) => void
   // onTaskCreated: (task: Task) => void
   boardId: string
+  boardMembers: BoardMember[]
 }
 
-const mockUsers = ["Thành An 1", "Thành An 2", "Thành An 3"]
-
-export function CreateTaskDialog({ open, onOpenChange, boardId }: CreateTaskDialogProps) {
+export function CreateTaskDialog({ open, onOpenChange, boardId, boardMembers }: CreateTaskDialogProps) {
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
   const [assignee, setAssignee] = useState("")
@@ -53,7 +53,7 @@ export function CreateTaskDialog({ open, onOpenChange, boardId }: CreateTaskDial
     setIsLoading(true)
 
     try {
-      const newTask:  Omit<Task, 'id'> = {
+      const newTask: Omit<Task, 'id'> = {
         title,
         description,
         assigneeId: assignee,
@@ -124,9 +124,9 @@ export function CreateTaskDialog({ open, onOpenChange, boardId }: CreateTaskDial
                     <SelectValue placeholder="Chọn người thực hiện" />
                   </SelectTrigger>
                   <SelectContent>
-                    {mockUsers.map((user) => (
-                      <SelectItem key={user} value={user}>
-                        {user}
+                    {boardMembers.map((member) => (
+                      <SelectItem key={member.id} value={member.id}>
+                        {member.name}
                       </SelectItem>
                     ))}
                   </SelectContent>

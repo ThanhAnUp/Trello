@@ -2,11 +2,15 @@ import { Injectable, NotFoundException, UnauthorizedException } from "@nestjs/co
 import { FirebaseService } from "src/firebase/firebase.service";
 import { CreateBoardDto } from "./dto/create-board.dto";
 import * as admin from 'firebase-admin';
+import { UsersService } from "src/user/users.service";
 
 @Injectable()
 export class BoardsService {
     private readonly boardsCollection = 'boards';
-    constructor(private readonly firebaseService: FirebaseService) { }
+    constructor(
+        private readonly firebaseService: FirebaseService,
+        private readonly usersService: UsersService
+    ) { }
 
     async create(dto: CreateBoardDto, ownerId: string): Promise<any> {
         const newBoard = {
@@ -89,5 +93,32 @@ export class BoardsService {
             batch.delete(doc.ref);
         });
         await batch.commit();
+    }
+
+    async getBoardMembers(boardId: string): Promise<any[]> {
+        const boardDoc = await this.firebaseService.getFirestore().collection(this.boardsCollection).doc(boardId).get();
+
+        if (!boardDoc.exists) {
+            throw new NotFoundException('Board không tồn tại');
+        }
+
+        const boardData = boardDoc.data();
+        const memberIds = boardData?.memberIds || [];
+
+        if (memberIds.length === 0) {
+            return [];
+        }
+
+        const memberPromises = memberIds.map(id => this.usersService.findById(id));
+        const members = await Promise.all(memberPromises);
+
+        return members
+            .filter(member => member !== null)
+            .map(member => ({
+                id: member.id,
+                name: member.name,
+                email: member.email,
+                avatarUrl: member.avatarUrl
+            }));
     }
 }

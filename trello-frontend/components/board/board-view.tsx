@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { DndContext, type DragEndEvent, DragOverlay, type DragStartEvent } from "@dnd-kit/core"
 import { SortableContext, arrayMove, horizontalListSortingStrategy } from "@dnd-kit/sortable"
 import { Button } from "@/components/ui/button"
-import { Plus, ArrowLeft, Settings } from "lucide-react"
+import { Plus, ArrowLeft, Settings, Github } from "lucide-react"
 import Link from "next/link"
 import { useWebSocket } from "../providers/websocket-provider"
 import { Column } from "./column"
@@ -40,6 +40,13 @@ const initialColumns = [
     { id: "done", title: "Done", color: "bg-green-100" },
 ]
 
+export interface BoardMember {
+    id: string;
+    name: string;
+    email: string;
+    avatarUrl?: string;
+}
+
 export function BoardView({ boardId }: BoardViewProps) {
     const [tasks, setTasks] = useState<Task[]>([])
     const [loading, setLoading] = useState(true);
@@ -50,18 +57,21 @@ export function BoardView({ boardId }: BoardViewProps) {
     const [selectedTask, setSelectedTask] = useState<Task | null>(null)
     const [showTaskDetail, setShowTaskDetail] = useState(false)
     const [showSettingsDialog, setShowSettingsDialog] = useState(false);
+    const [boardMembers, setBoardMembers] = useState<BoardMember[]>([]); 
     const { toast } = useToast()
 
     const fetchData = async () => {
         if (!boardId) return;
         try {
             setLoading(true);
-            const [boardRes, tasksRes] = await Promise.all([
+            const [boardRes, tasksRes, membersRes] = await Promise.all([
                 api.get(`/boards/${boardId}`),
-                api.get(`/boards/${boardId}/tasks`)
+                api.get(`/boards/${boardId}/tasks`),
+                api.get(`/boards/${boardId}/members`),
             ]);
             setBoard(boardRes.data);
             setTasks(tasksRes.data);
+            setBoardMembers(membersRes.data);
         } catch (error) {
             console.error("Lỗi khi tải dữ liệu board:", error);
             toast({ variant: "destructive", title: "Lỗi", description: "Không thể tải dữ liệu của board." });
@@ -185,7 +195,7 @@ export function BoardView({ boardId }: BoardViewProps) {
 
     return (
         <div className="flex flex-col h-full w-full">
-            <div className="flex items-center justify-between w-full">
+            <div className="flex items-center justify-between w-full flex-wrap">
                 <div className="flex items-center space-x-4">
                     <Link href="/dashboard">
                         <Button variant="ghost" size="sm">
@@ -194,14 +204,14 @@ export function BoardView({ boardId }: BoardViewProps) {
                         </Button>
                     </Link>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2 ml-auto">
                     <Button onClick={() => setShowCreateDialog(true)}>
                         <Plus className="h-4 w-4 mr-2" />
                         Thêm Task
                     </Button>
                     <Dialog open={showSettingsDialog} onOpenChange={setShowSettingsDialog}>
                         <DialogTrigger asChild>
-                            <Button variant="outline"><Settings className="h-4 w-4" /></Button>
+                            <Button variant="outline"><Github className="h-4 w-4" /></Button>
                         </DialogTrigger>
                         <DialogContent>
                             <DialogHeader>
@@ -249,12 +259,14 @@ export function BoardView({ boardId }: BoardViewProps) {
                 boardId={boardId}
                 open={showCreateDialog}
                 onOpenChange={setShowCreateDialog}
+                boardMembers={boardMembers}
             // onTaskCreated={(task) => setTasks((prev) => [...prev, task])}
             />
             <TaskDetailDialog
                 task={selectedTask}
                 boardId={boardId}
                 open={showTaskDetail}
+                boardMembers={boardMembers}
                 onOpenChange={setShowTaskDetail}
             />
         </div>

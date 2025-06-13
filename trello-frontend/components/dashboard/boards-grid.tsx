@@ -120,8 +120,8 @@ export function BoardsGrid() {
         </Card>
         {boards.map((board) => (
           <Link key={board.id} href={`/dashboard/boards/${board.id}`} className="min-h-full">
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer min-h-full">
-              <CardHeader>
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer min-h-full flex flex-col">
+              <CardHeader className="h-full">
                 <div className="flex items-start justify-between">
                   <Badge variant="secondary" className="bg-green-500 text-white">Open</Badge>
                   {board.ownerId === user?.id && <Button variant='destructive' onClick={(event) => handleDeleteClick(event, board.id, board.name)}>
@@ -144,7 +144,7 @@ export function BoardsGrid() {
                   </div>
                 </div>
               </CardContent>
-              <CardFooter>
+              <CardFooter className="mt-auto">
                 <Button
                   variant="outline"
                   size="sm"

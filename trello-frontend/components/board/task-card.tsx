@@ -82,11 +82,7 @@ export function TaskCard({ task, isDragging = false, onClick }: TaskCardProps) {
         <CardDescription className="text-xs line-clamp-2">{task.description}</CardDescription>
       </CardHeader>
       <CardContent className="pt-0">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <User/>
-            <span className="text-xs text-gray-600">{task.assigneeId}</span>
-          </div>
+        <div className="flex items-center justify-end">
           <div className={`flex items-center space-x-1 text-xs ${isOverdue ? "text-red-600" : "text-gray-500"}`}>
             {isOverdue && <AlertCircle className="h-3 w-3" />}
             <Calendar className="h-3 w-3" />

@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast"
 import { api } from "@/lib/api"
 import { Separator } from "@radix-ui/react-select"
 import { BoardItem } from "../dashboard/boards-grid"
+import { BoardMember } from "./board-view"
 
 interface Task {
     id: string
@@ -54,11 +55,12 @@ interface TaskDetailDialogProps {
     open: boolean
     onOpenChange: (open: boolean) => void
     boardId: string
+    boardMembers: BoardMember[]
 }
 
 const mockUsers = ["Thành An 1", "Thành An 2", "Thành An 3"]
 
-export function TaskDetailDialog({ task, open, onOpenChange, boardId }: TaskDetailDialogProps) {
+export function TaskDetailDialog({ task, open, onOpenChange, boardId, boardMembers }: TaskDetailDialogProps) {
     const [isEditing, setIsEditing] = useState(false)
     const [editedTask, setEditedTask] = useState<Task | null>(null)
     const [isLoading, setIsLoading] = useState(false)
@@ -69,6 +71,7 @@ export function TaskDetailDialog({ task, open, onOpenChange, boardId }: TaskDeta
     const [attachments, setAttachments] = useState<Attachment[]>([]);
     const [attachmentType, setAttachmentType] = useState<'pull_request' | 'issue' | 'commit'>('issue');
     const [attachmentRef, setAttachmentRef] = useState('');
+
     const { toast } = useToast()
 
     useEffect(() => {
@@ -85,7 +88,7 @@ export function TaskDetailDialog({ task, open, onOpenChange, boardId }: TaskDeta
 
                     const [boardDetailsResponse, attachmentsResponse] = await Promise.all([
                         boardDetailsPromise,
-                        attachmentsPromise
+                        attachmentsPromise,
                     ]);
 
                     const boardData = boardDetailsResponse.data;
@@ -272,6 +275,8 @@ export function TaskDetailDialog({ task, open, onOpenChange, boardId }: TaskDeta
         { value: "done", label: "Done" },
     ]
 
+    const assignee = boardMembers.find(member => member.id === editedTask.assigneeId);
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
@@ -381,17 +386,17 @@ export function TaskDetailDialog({ task, open, onOpenChange, boardId }: TaskDeta
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    {mockUsers.map((user) => (
-                                        <SelectItem key={user} value={user}>
-                                            {user}
+                                    {boardMembers.map((member) => (
+                                        <SelectItem key={member.id} value={member.id}>
+                                            {member.name} {member.email && ` - ${member.email}`}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
                         ) : (
                             <div className="flex items-center space-x-2 p-2 border rounded-md">
-                                <User />
-                                <span className="text-sm">{task.assigneeId}</span>
+                                <User className="h-4 w-4 text-muted-foreground" />
+                                <span className="text-sm">{assignee ? assignee.name : 'Chưa giao'}</span>
                             </div>
                         )}
                     </div>

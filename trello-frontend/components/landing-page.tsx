@@ -3,11 +3,24 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Users, Zap, Globe, Trello } from "lucide-react"
+import { Users, Zap, Globe, Trello, LogOut, LogIn } from "lucide-react"
 import { useUserStore } from "@/store/user-store"
+import { redirect } from "next/navigation"
+import { api } from "@/lib/api"
 
 export function LandingPage() {
-  const {user} = useUserStore()
+  const { user } = useUserStore()
+
+  const handleLogout = async () => {
+    const res = await api.request({
+      method: 'post',
+      url: '/auth/logout'
+    })
+    if (res.data.success) {
+      redirect('/login')
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex flex-col">
       <header className="border-b bg-white/80 backdrop-blur-sm">
@@ -17,16 +30,16 @@ export function LandingPage() {
             <span className="text-2xl font-bold text-gray-900">TaskBoard</span>
           </div>
           <div className="flex items-center space-x-4">
-            <Link href="/auth/signin">
-              <Button variant="ghost">Đăng nhập</Button>
-            </Link>
+            {!user ? <Link href="/auth/signin">
+              <Button variant="ghost" className="border"><LogIn /> Đăng nhập</Button>
+            </Link> : <Button variant="ghost" className="border" onClick={handleLogout}><LogOut /> Đăng xuất</Button>}
             <Link href={user ? "/dashboard" : "/auth/signup"}>
               <Button>Bắt đầu ngay</Button>
             </Link>
           </div>
         </div>
       </header>
-      
+
       <section className="py-20 px-4 bg-white grow">
         <div className="container mx-auto">
           <h2 className="text-3xl font-bold text-center mb-12">
