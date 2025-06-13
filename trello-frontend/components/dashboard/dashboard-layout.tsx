@@ -13,8 +13,8 @@ interface DashboardLayoutProps {
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <div className="min-h-screen bg-gray-50 w-full">
-      <div className="flex flex-col max-w-full overflow-hidden">
-        <div className="flex">
+      <div className="flex max-md:flex-col max-w-full overflow-hidden">
+        <div className="flex md:hidden">
           <Link key={'Home'} href={"/"} className="ml-auto mx-4 mt-4">
             <Button
               variant={"ghost"}
@@ -25,7 +25,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             </Button>
           </Link>
         </div>
-        <main className="p-6">{children}</main>
+        <Sidebar/>
+        <main className="p-6 md:grow md:w-0">{children}</main>
       </div>
     </div>
   )

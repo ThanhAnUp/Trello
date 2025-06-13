@@ -194,7 +194,7 @@ export function BoardView({ boardId }: BoardViewProps) {
     }
 
     return (
-        <div className="flex flex-col h-full w-full">
+        <div className="flex flex-col h-full">
             <div className="flex items-center justify-between w-full flex-wrap">
                 <div className="flex items-center space-x-4">
                     <Link href="/dashboard">
