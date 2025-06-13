@@ -11,11 +11,13 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Github, Trello } from "lucide-react"
 import { api } from "@/lib/api"
+import { useUserStore } from "@/store/user-store"
 
 export function SignInForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const {fetchUser} = useUserStore();
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -34,8 +36,8 @@ export function SignInForm() {
 
       const data = response.data;
 
-      console.log(data, 'data.success')
       if (data.success) {
+        await fetchUser()
         router.push('/dashboard')
       }
     } catch (error) {

@@ -17,7 +17,7 @@ export function LandingPage() {
       url: '/auth/logout'
     })
     if (res.data.success) {
-      redirect('/login')
+      redirect('/auth/signin')
     }
   }
 

@@ -225,7 +225,7 @@ export class AuthService {
                 <!-- Header -->
                 <tr>
                   <td align="center" style="background-color: #1976d2; padding:20px 0;">
-                    <h1 style="color:#ffffff; margin:0; font-size:24px;">Xem Nhà Bán</h1>
+                    <h1 style="color:#ffffff; margin:0; font-size:24px;">TaskBoard</h1>
                   </td>
                 </tr>
 
@@ -260,7 +260,7 @@ export class AuthService {
                 <!-- Footer -->
                 <tr>
                   <td align="center" style="background-color:#f5f5f5; padding:16px; font-size:12px; color:#999999;">
-                    © 2025 Xem Nhà Bán. Mọi quyền được bảo lưu.<br/>
+                    © 2025 TaskBoard. Mọi quyền được bảo lưu.<br/>
                     123 Đường ABC, Quận XYZ, TP. HCM
                   </td>
                 </tr>
