@@ -4,15 +4,15 @@
 2. cd trello-backend -> npm install -> npm start
 3. cd trello-frontend -> npm install -> npm run dev
 
-![BoardSetting](./trello-frontend/.github/assets/board setting.png)
+![BoardSetting](./trello-frontend/.github/assets/board-setting.png)
 
 ![Boards](./trello-frontend/.github/assets/boards.png)
 
-![Newboard](./trello-frontend/.github/assets/new board.png)
+![Newboard](./trello-frontend/.github/assets/new-board.png)
 
-![NewTask](./trello-frontend/.github/assets/new task.png)
+![NewTask](./trello-frontend/.github/assets/new-task.png)
 
-![SignupOtp](./trello-frontend/.github/assets/signup - otp.png)
+![SignupOtp](./trello-frontend/.github/assets/signup-otp.png)
 
 ![Tasks](./trello-frontend/.github/assets/tasks.png)
 
